@@ -54,7 +54,7 @@ key_words = [
 def words_frequency_analysis(data, k=1):
     '''
     函数对于整个输入数据进行词频分析
-    输入 
+    输入
         data -> 文本
         k -> n个词的词频
     输出 词频分析结果【有序】
@@ -81,7 +81,7 @@ def remove_useless_words(count_dict: dict):
 
 def sort_dict(count_dict, threshold=None):
     temp = sorted(
-        count_dict.items(), key=lambda x:x[1], reverse=True
+        count_dict.items(), key=lambda x: x[1], reverse=True
     )
     if threshold is not None:
         temp = temp[:threshold]
@@ -89,7 +89,6 @@ def sort_dict(count_dict, threshold=None):
     for item in temp:
         count_result[item[0]] = item[1]
     return count_result
-
 
 
 if __name__ == "__main__":

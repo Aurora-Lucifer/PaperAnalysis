@@ -6,24 +6,27 @@
     2. html -> title
     3. 存储所有的title.txt
 '''
+import os
 import re
-import json
-
+import requests
 '''
 data_path -> accept paper list 所在的html页面
 title_save_path -> title存储路径
 key -> html中标志title的属性名称
 '''
 
-data_path = 'dataset/icml_2021/ICML-2021.html'
-title_save_path = 'dataset/icml_2021/icml_title.txt'
-analysis_result = 'dataset/icml_2021/title_analysis.json'
-key = 'maincardBody'
+# data_path = 'dataset/icml_2021/ICML-2021.html'
+# title_save_path = 'dataset/icml_2021/icml_title.txt'
+# analysis_result = 'dataset/icml_2021/title_analysis.json'
+# key = 'maincardBody'
 
+url = 'https://nips.cc/Conferences/2020/Schedule?type=Poster'
+conference_name = 'nips'
+year_number = '2020'
+key = 'maincardBody'
 # data_path = 'dataset/nips_2021/NIPS-2021.html'
 # title_save_path = 'dataset/nips_2021/nips_title.txt'
 # analysis_result = 'dataset/nips_2021/title_analysis.json'
-# key = 'maincardBody'
 
 # data_path = 'dataset/kdd_2021/KDD-2021.html'
 # title_save_path = 'dataset/kdd_2021/kdd_title.txt'
@@ -45,7 +48,6 @@ def title_extract(data, title_key):
             n = 1
             while n > 0:
                 line, n = re.subn(r"\<[^<]*?\>", "", line)
-            # import ipdb; ipdb.set_trace()
             title = line.strip() + '\n'
             title_list.append(title)
     return title_list
@@ -64,7 +66,34 @@ def save_all(data, file_path):
     f.close()
 
 
-if __name__ == "__main__":
+def get_html(url):
+    html = requests.get(url)
+    if html.status_code != 200:
+        print("页面爬取错误")
+    return html.text
+
+
+def database_generate(url, conference, year, key):
+    '''
+        生成会议论文database
+    '''
+    # 获取页面
+    html = get_html(url)
+    # 路径生成
+    folder_name = 'dataset/' + conference + '_' + year
+    data_path = folder_name + '/' + conference + '-' + year + '.html'
+    title_path = folder_name + '/' + conference + '_title.txt'
+    if os.path.exists(folder_name) is False:
+        os.mkdir(folder_name)
+    # 储存
+    save_all(html, data_path)
     data = read_all(data_path)
     titles = title_extract(data, title_key=key)
-    save_all(titles, title_save_path)
+    save_all(titles, title_path)
+
+
+if __name__ == "__main__":
+    database_generate(url, conference_name, year_number, key)
+    # data = read_all(data_path)
+    # titles = title_extract(data, title_key=key)
+    # save_all(titles, title_save_path)
