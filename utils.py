@@ -34,6 +34,16 @@ key = 'maincardBody'
 # key = 'font color'
 
 
+def path_generate(conference, year):
+    '''
+        生成各种需要的数据路径
+    '''
+    folder_name = 'dataset/' + conference + '_' + year
+    data_path = folder_name + '/' + conference + '-' + year + '.html'
+    title_path = folder_name + '/' + conference + '_title.txt'
+    return folder_name, data_path, title_path
+
+
 def title_extract(data, title_key):
     '''
     抽取题目，删除无关项
@@ -80,13 +90,12 @@ def database_generate(url, conference, year, key):
     # 获取页面
     html = get_html(url)
     # 路径生成
-    folder_name = 'dataset/' + conference + '_' + year
-    data_path = folder_name + '/' + conference + '-' + year + '.html'
-    title_path = folder_name + '/' + conference + '_title.txt'
+    folder_name, data_path, title_path = path_generate(conference, year)
     if os.path.exists(folder_name) is False:
         os.mkdir(folder_name)
     # 储存
     save_all(html, data_path)
+    # TODO: Unicode -> utf-8，暂时懒得写转换了直接存了再读
     data = read_all(data_path)
     titles = title_extract(data, title_key=key)
     save_all(titles, title_path)
