@@ -7,7 +7,7 @@
 
 import re
 import json
-from utils import read_all, save_all
+from utils import read_all, save_all, path_generate
 
 '''
 data_path -> accept paper list 所在的html页面【暂无爬虫手动复制】
@@ -16,8 +16,11 @@ analysis_path -> 词频分析结果存储路径
 key -> html中
 '''
 
-title_save_path = 'dataset/icml_2021/icml_title.txt'
-analysis_result = 'dataset/icml_2021/title_analysis.json'
+conference_name = 'nips'
+year_number = '2020'
+
+# title_save_path = 'dataset/icml_2021/icml_title.txt'
+# analysis_result = 'dataset/icml_2021/title_analysis.json'
 
 # title_save_path = 'dataset/nips_2021/nips_title.txt'
 # analysis_result = 'dataset/nips_2021/title_analysis.json'
@@ -91,16 +94,30 @@ def sort_dict(count_dict, threshold=None):
     return count_result
 
 
-if __name__ == "__main__":
+def count_analysis(conference, year, word_lenth):
+    '''
+    词频分析
+        word_length表示要分析的词长度上限
+    '''
+    folder_name, _, title_save_path = path_generate(conference, year)
     titles = read_all(title_save_path)
-    count = words_frequency_analysis(titles, k=1)
-    count.update(words_frequency_analysis(titles, k=2))
-    count.update(words_frequency_analysis(titles, k=3))
+    count = {}
+    for i in range(word_lenth):
+        count.update(words_frequency_analysis(titles, k=i+1))
     remove_useless_words(count)
     for words in key_words:
         if words in count.keys():
             print(words, count[words])
     count = sort_dict(count, 500)
+    analysis_result = folder_name + '/title_analysis.json'
     json.dump(count, open(analysis_result, 'w'), indent=-1)
 
-    # import ipdb; ipdb.set_trace()
+
+
+# def query_for_keywords():
+#     pass
+
+
+if __name__ == "__main__":
+    # count_analysis(conference_name, year_number, 3)
+
