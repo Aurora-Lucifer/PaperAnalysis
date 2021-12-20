@@ -8,4 +8,8 @@ Icon
 
 # Thumbnails
 ._*
+_*
 
+# 爬取的html原始页面
+*.html
+*.json
